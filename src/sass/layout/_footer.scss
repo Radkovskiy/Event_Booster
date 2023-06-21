@@ -1,0 +1,10 @@
+.footer {
+  display: flex;
+  justify-content: center;
+  color: $text-color;
+}
+
+.footer__text{
+  width: 270px;
+  text-align: center;
+}

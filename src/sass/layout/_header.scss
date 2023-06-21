@@ -1,0 +1,169 @@
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  background-image: linear-gradient(to top,
+      rgba(47, 48, 58, 0.4),
+      rgba(47, 48, 58, 0.4)),
+    url(../images/img_png/m_hero@1.png);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: 50% 40%;
+
+  padding-bottom: 40px;
+
+  @include mq(tablet) {
+    background-image: linear-gradient(to top,
+        rgba(47, 48, 58, 0.4),
+        rgba(47, 48, 58, 0.4)),
+      url(../images/img_png/t_hero@1.png);
+    background-position: 50% -5%;
+
+    padding-bottom: 80px;
+
+  }
+}
+
+
+
+.logo-link {
+  position: absolute;
+  left: -2%;
+
+
+  @include mq(mobile-only) {
+    margin-left: -80%;
+    position: static;
+  }
+
+  @include mq(tablet) {
+    left: -3%;
+  }
+
+  @include mq(desktop) {
+    left: -2%;
+  }
+}
+
+.logo-kvadrat {
+  position: absolute;
+  top: -1px;
+  left: -1px;
+
+  width: 106px;
+  height: 90px;
+  background: linear-gradient(136.07deg, rgba(196, 196, 196, 0.03) 10.75%, rgba(196, 196, 196, 0) 92.33%);
+  backdrop-filter: blur(15px);
+  border-bottom-right-radius: 500px;
+
+  @include mq(tablet) {
+    top: -1px;
+    left: 23px;
+
+    width: 179px;
+    height: 151px;
+  }
+  @include mq(desktop) {
+    top: -1px;
+    left: 23px;
+
+    width: 229px;
+    height: 193px;
+  }
+}
+
+.logo {
+  position: absolute;
+
+  @include mq(mobile-only) {
+    top: -6px;
+    left: -32px;
+  }
+
+  @include mq(tablet) {
+    top: 0px;
+    left: -32px;
+
+    width: 210px;
+    height: 120px;
+  }
+}
+
+.header__wrapp {
+  margin-top: 24px;
+
+  @include mq(tablet) {
+    display: flex;
+
+    margin-top: 40px;
+
+  }
+}
+
+.header__inputWrapp {
+  position: relative;
+
+  @include mq(tablet) {
+    margin-right: 32px;
+  }
+}
+
+// текст узкий
+.header__input {
+  width: 247.51px;
+  border-radius: 20px;
+  padding-left: 32.49px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border: none;
+
+  background-color: rgba(255, 255, 255, 0.2);
+  color: $text-color;
+
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19.5px;
+
+  &:hover,
+  &:focus {
+    outline: none;
+  }
+}
+
+.magnifying {
+  position: absolute;
+  top: 14px;
+  right: 25px;
+  fill: $text-color;
+
+}
+
+.header__select {
+  position: relative;
+
+  width: 247.51px;
+  border-radius: 20px;
+  padding-left: 32.49px;
+  padding-top: 10px;
+  padding-bottom: 10px;
+
+  background-color: rgba(255, 255, 255, 0.2);
+  color: $text-color;
+
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 19.5px;
+
+  @include mq(mobile-only) {
+    margin-top: 24px;
+  }
+}
+
+.select-icon {
+  position: absolute;
+  top: 17px;
+  right: 21px;
+  fill: $text-color;
+}
