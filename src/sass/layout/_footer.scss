@@ -4,7 +4,13 @@
   color: $text-color;
 }
 
-.footer__text{
+.footer__text {
   width: 270px;
   text-align: center;
+
+  @include mq(tablet) {
+    width: 550px;
+
+    font-size: 16px;
+  }
 }

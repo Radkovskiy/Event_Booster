@@ -5,54 +5,66 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Page title</title>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/modern-normalize/1.0.0/modern-normalize.min.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./sass/main.css" />
+  <link rel="stylesheet" href="../css/main.min.css" />
 </head>
 
 <body>
   <header>
     <div class="header container">
-      <!-- уменьшить прозрачность инпутов и лого -->
       <a class="logo-link" href="index.html">
-        <div class="logo-kvadrat">
+        <div class="logo-square">
+          <!-- откуда берутся размеры, если 22 строка не влияет на них? -->
           <svg class="logo" width="180px" height="107px">
             <use href="./images/event_booster.svg#icon-logo"></use>
           </svg>
         </div>
-
-        <!-- откуда берутся размеры, если 19 строка не влияет на них? -->
       </a>
       <h1>Find best events
         around the world</h1>
       <div class="header__wrapp">
         <div class="header__inputWrapp">
-          <input class="header__input" type="Start searching" placeholder="Start searching">
-          <svg class="magnifying" width="12px" height="12px">
-            <use href="./images/event_booster.svg#icon-magnifying"></use>
-          </svg>
+          <form class="header__form" action="">
+            <input class="header__input" type="Start searching" name="serchQuery" placeholder="Start searching">
+            <button type="submit" class="headerInput__button">
+              <svg class="headerInput__icon" width="15" height="20">
+                <use href="./images/event_booster.svg#icon-magnifying"></use>
+              </svg>
+            </button>
+          </form>
         </div>
-        <div class="header__select">Choose country
-          <svg class="select-icon" width="15px" height="10px">
-            <use href="./images/event_booster.svg#icon-select"></use>
-          </svg>
+        <div class="countries">
+          <div class="countries__input">Choose country
+            <svg class="select-icon" width="15px" height="10px">
+              <use href="./images/event_booster.svg#icon-select"></use>
+            </svg>
+          </div>
+          <ul class="countries__list is-hidden">
+          </ul>
         </div>
       </div>
     </div>
   </header>
-
-  <body>
-    <section class="events container">
-      <ul class="events__list"></ul>
+  <!-- сделать мейн релатив и поднять вверх -->
+  <main>
+    <section class="events">
+      <div class="container events__wrapp">
+        <ul class="events__list"></ul>
+      </div>
+      <div class="  "></div>
     </section>
-  </body>
-
-  <footer class="footer container">
-    <p class="footer__text">© 2021 | All Rights Reserved |
-      Developed with ❤ by GoIT Students</p>
+  </main>
+  <footer>
+    <div class="footer container">
+      <p class="footer__text">© 2021 | All Rights Reserved |
+        Developed with ❤ by GoIT Students</p>
+    </div>
   </footer>
-
+  <script src="js/index.js" type="module"></script>
 </body>
 
 </html>

@@ -32,7 +32,6 @@ body {
   line-height: 1.2;
   letter-spacing: 0.03em;
   background-color: $background-color;
-  // background-color: teal;
 }
 
 h1 {
@@ -51,6 +50,21 @@ h1 {
 
     font-size: 36px;
   }
+
+  @include mq(desktop) {
+    margin-top: 40px;
+    width: 600px;
+
+    font-size: 50px;
+  }
+}
+
+h2 {
+  color: $title-color;
+}
+
+input {
+  letter-spacing: .03em;
 }
 
 // h2 {
