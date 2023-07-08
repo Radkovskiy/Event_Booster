@@ -8,6 +8,8 @@ const searchForm = document.querySelector('.header__form');
 const eventsList = document.querySelector('.events__list');
 const selectCountry = document.querySelector('.countries__input')
 const countriesList = document.querySelector('.countries__list')
+const backdrop = document.querySelector('.backdrop')
+const modalEl = document.querySelector('.modal')
 const countries = [
   { code: "US", name: "United States Of America" },
   { code: "AD", name: "Andorra" },
@@ -93,6 +95,8 @@ const countries = [
   { code: "UY", name: "Uruguay" },
   { code: "VE", name: "Venezuela" }
 ];
+const pagesEl = document.querySelector('.events__pages')
+let totalPages = 0
 
 
 export const ticketmasterAPI = new TicketmasterAPI();
@@ -132,11 +136,31 @@ async function renderBaseMarkup() {
     // ждать выполнения запроса на бек
     const response = await ticketmasterAPI.fetchTickets();
     const baseMarkup = response._embedded.events
-    const totalPages = response.page.totalPages
-    eventsList.innerHTML = baseMarkup.map(({ images: { [5]: { url: previewImgUrl } }, name, dates: { start: { localDate } }, _embedded: { venues: { [0]: { name: nameOfThePlace } } } }) => {
+    // console.log(response);
+    totalPages = response.page.totalPages
+    eventsList.innerHTML = baseMarkup.map(({
+      images: { [5]: { url: previewImgUrl } },
+      name,
+      priceRanges: { [0]: { min: minPrice, max: maxPrice, currency, type } },
+      accessibility: { info },
+      dates: { start: { localDate, localTime } },
+      _embedded: { venues: { [0]: { name: nameOfThePlace, timezone, city: { name: nameOfCity },
+        country: { name: nameOfCountry } }
+      } } }) => {
       return `
           <li class="events__item list">
-            <div class="events__card">
+            <div class="events__card"
+            data-info="${info}"
+            data-date="${localDate}"
+            data-time="${localTime}"
+            data-timezone="${timezone}"
+            data-city="${nameOfCity}"
+            data-country="${nameOfCountry}"
+            data-who="${name}"
+            data-minPrice="${minPrice}"
+            data-maxPrice="${maxPrice}"
+            data-currency="${currency}"
+            data-type="${type}">
               <img class="events__img" src="${previewImgUrl}" alt="" width="120" height="120">
               <h2 class="events__name">${name}</h2>
               <p class="events__date">${localDate}</p>
@@ -145,7 +169,7 @@ async function renderBaseMarkup() {
           </li>`
     }).join('')
 
-    paginal()
+    // paginal(ticketmasterAPI.page)
 
   } catch (error) {
     Report.failure(
@@ -157,25 +181,140 @@ async function renderBaseMarkup() {
   }
 }
 
-// функция должна рендерить лишки с номерами страниц
-function paginal() {
-  console.log(totalPages);
+eventsList.addEventListener('click', openModal)
 
-  const totalItems = response.length; // Общее количество элементов
-  const totalPages = Math.ceil(totalItems / pageSize); // Рассчитываем общее количество страниц
+function openModal(e) {
+  // console.log(e.target);
+  if (e.target.nodeName !== "IMG") {
+    return
+  }
+
+
+
+  backdrop.classList.remove('is-hidden')
+
+  const data = e.target.parentNode.dataset;
+  // console.log(data.timezone);
+  const modalHtml = `
+  <svg class="modal__close" width="24" height="24">
+    <use href="./images/event_booster.svg#icon-close"></use>
+  </svg>
+  <img class="modal__img" src="${e.target.src}" alt="${data.who}" width="100" height="100px">
+  <img class="modal__bigImg" src="${e.target.src}" alt="${data.who}" width="100" height="100px">
+  <div class="modal__info modal__div">
+    <h2>INFO</h2>
+    <p>${data.info}</p>
+  </div>
+  <div class="modal__timeDate modal__div">
+    <h2>WHEN</h2>
+    <p class="modal__date">${data.date}</p>
+    <p>${data.time} (${data.timezone})</p>
+  </div>
+  <div class="modal__location modal__div">
+    <h2>WHERE</h2>
+    <p>${data.city}, ${data.country}</p>
+  </div>
+  <div class="modal__name modal__div">
+    <h2>WHO</h2>
+    <p>${data.name}</p>
+  </div>
+  <div class="modal__price modal__div"price>
+    <h2>PRICES</h2>
+    <div class="modal__standartPrice modal__div">
+      <p>Standart ${data.minprice} ${data.currency}</p>
+      <button class="modal__button">BUY TICKETS</button>
+    </div>
+    <div class="modal__vipPrice modal__div">
+      <p>VIP ${data.maxprice} ${data.currency}</p>
+      <button class="modal__button">BUY TICKETS</button>
+    </div>
+  </div>
+  <button class="modal__buttonMore modal__button">MORE FROM THIS AUTHOR</button>`
+
+  modalEl.innerHTML = modalHtml
+
+  const closeBtn = document.querySelector('.modal__close')
+
+  document.body.style.overflow = 'hidden';
+  modalEl.addEventListener('wheel', preventScroll);
+
+  closeBtn.addEventListener('click', closeModal)
+  document.addEventListener('keydown', closeModal)
+  document.addEventListener('click', closeModal)
 }
+
+function closeModal(e) {
+  if (e.target === backdrop || e.code === "Escape") {
+    // console.log(123);
+    backdrop.classList.add('is-hidden')
+    document.removeEventListener('keydown', closeModal)
+    document.removeEventListener('click', closeModal)
+
+    document.body.style.overflow = '';
+    modalEl.removeEventListener('wheel', preventScroll);
+  }
+}
+
+function preventScroll(event) {
+  // Предотвращаем прокрутку на основной странице
+  event.stopPropagation();
+}
+// функция должна рендерить лишки с номерами страниц
+// function paginal(currentPage) {
+
+//   let pagesArr = []
+
+
+//   if (totalPages === 1) {
+//     list.innerHTML = '';
+//     return;
+//   }
+
+//   for (let i = 1; i <= totalPages; i++) {  // вместо "3" ебануть переменную "totalPages"
+//     pagesArr.push(`<button class="paginalBtn">${i}</button>`)
+//   }
+//   // console.log(pagesArr);
+//   const paginalBtn = document.querySelector('.paginalBtn')
+//   paginalBtn.addEventListener('click', callback)
+//   function callback(numPage) {
+//     try {
+//       console.log(ticketmasterAPI.page);
+//       // const response = await ticketmasterAPI.fetchTickets();
+//       // const baseMarkup = response._embedded.events
+//       // eventsList.innerHTML = baseMarkup.map(({ images: { [5]: { url: previewImgUrl } }, name, dates: { start: { localDate } }, _embedded: { venues: { [0]: { name: nameOfThePlace } } } }) => {
+//       //   return `
+//       //       <li class="events__item list">
+//       //         <div class="events__card">
+//       //           <img class="events__img" src="${previewImgUrl}" alt="" width="120" height="120">
+//       //           <h2 class="events__name">${name}</h2>
+//       //           <p class="events__date">${localDate}</p>
+//       //           <p class="events__nameOfThePlace">${nameOfThePlace}</p>
+//       //         </div>
+//       //       </li>`
+//       // }).join('')
+//     } catch (error) {
+//       Report.failure(
+//         'Error',
+//         'Sorry, no matches were found. Try a new search or use our suggestions.',
+//         'Okay'
+//       );
+//       console.log(err);
+//     }
+//     pagesEl.innerHTML = pagesArr.join('')
+//   }
 
 function renderCountries(arr) {
   const html = arr.map(({ code, name }) => {
     return `
-        <li class="option list">
-          <input type="radio" class="radio" name="category" id="${code}">
-          <label for="${code}">${name}</label>
-        </li>`
+      <li class="option list">
+        <input type="radio" class="radio" name="category" id="${code}">
+        <label for="${code}">${name}</label>
+      </li>`
   }).join('')
   countriesList.innerHTML = html;
   chooseCountry()
 }
+
 
 // 🟢 Сделать так, что бы при новом поиске, все стиралось и рендерилось заново;
 // 🟢 Использовать слайс или цсс для максимальной ширины строки;
@@ -184,15 +323,27 @@ function renderCountries(arr) {
   // 🟢сделать див с названиями стран и их id в дата атрибутах
   // 🟢добавить класс хидден и тогглить его по нажатию на див или на страну
   // 🟢сохранить id выбранной страны в value и передавать его в ticketmasterAPI
+// 🔴 Перестал работать фетч
+// 🟢 Модалка;
+  // 🔴скролл внутри модалки не работает
+  // 🔴крестика не видно и слушатель на него не вешается
+  // 🔴поставить свг штрихкоды на прайсы
+  // 🔴некоторые свойства ундефайнд
+  // 🔴модалка открывается по нажатию на картинку, а не на див
+  // 🔴запихать текст в дивы и расставить отступы от дивов, а не от пешек
+  // 🔴при клике на картинку после переагрузки траницы, бывает, что
+  //    в консоль два раза выводится значение. Мб нужно тогглить евнтлитнер
+  //    по мере открытия/закрытия модалки?
 // 🔴 Пагинация;
   // 🔴 нужна юлка и столько лишек, сколько страничек прикодит от бека
   // 🔴 в каждой лишке ссылка на соответствующую страничку
 // 🔴 пофиксить див со странами
   // 🔴 если я открыл див со странами, то при нражатии на любую точку вьюпорта,
   //     кроме этого дива, повесить на него из-хиден
-  // 🔴 ввести поиск вречную по странам
+  // 🔴 ввести поиск вручную по странам
+  // 🔴 добавить возможность выбрать нейтральный вариант, что удалит из
+  //     запрса какую либо страну
 // 🔴 растянуть максимальную высоту строки (в две строки), что бы, в случае привышения
 //     размера строки, текст елся тремя точками
 
 
-// импорт countrySelector нигде не юзается, это норм?

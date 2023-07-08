@@ -1,0 +1,124 @@
+.backdrop {
+  position: fixed;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+
+  padding: 20px;
+
+  background: rgba(32, 13, 29, 0.60);
+  backdrop-filter: blur(1.5px);
+
+  // overflow: hidden;
+  // display: none;
+}
+
+.modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+
+  padding: 80px 21px 100px 16px;
+  min-width: 280px;
+
+  border-top-left-radius: 150px;
+  border-bottom-right-radius: 150px;
+  // width: 100%;
+  // padding: 20px;
+
+  background-color: $modal-color;
+  color: $background-color;
+
+  text-align: center;
+
+  @include mq(tablet) {
+    display: flex;
+    flex-direction: column;
+
+    padding: 32px 49px 48px 87px;
+    min-width: 704px;
+
+    border-top-left-radius:asdasdasd 300px;
+    border-bottom-right-radius: 300px;
+    // justify-content: center;
+  }
+}
+
+.modal__close {
+  position: absolute;
+  right: 24px;
+  top: 24px;
+  fill: $button-color;
+}
+
+.modal h2 {
+  font-weight: 600;
+  margin-bottom: 5px;
+}
+
+.modal__img {
+  margin-right: auto;
+  margin-left: auto;
+  margin-bottom: 20px;
+
+  border-radius: 50px;
+  object-fit: cover;
+
+}
+
+.modal__bigImg {
+  position: absolute;
+  top: 142px;
+  left: 87px;
+
+  width: 249px;
+  height: 217px;
+
+  object-fit: cover;
+
+  @include mq(mobile-only) {
+    display: none;
+  }
+}
+
+.modal__div:not(:last-child) {
+  margin-bottom: 16px;
+
+}
+
+// 🔴не работает из-за специфичности, верхняя строка перебивает!!!!
+// исправил специфичность, но изменения не отображаются в браузере
+.modal .modal__price {
+  margin-bottom: 0;
+}
+
+.modal__button {
+  width: 145px;
+  height: 40px;
+  border-radius: 5px;
+
+  margin-right: auto;
+  margin-left: auto;
+  margin-top: 16px;
+  padding: 9px 19px 11px 19px;
+
+  background-color: $button-color;
+  border-color: $button-color;
+  color: $white;
+
+  // &:first-of-type {
+  //   margin-bottom: 16px;
+  // }
+}
+
+.modal__buttonMore {
+  width: 224px;
+  padding: 10px 3px;
+
+  margin-top: 24px;
+
+  background-color: $modal-color;
+  border-color: $button-color;
+  color: $button-color;
+}
