@@ -1,12 +1,13 @@
 import countrySelector from './country-selector';
 import { chooseCountry } from './country-selector';
 import { TicketmasterAPI } from './ticketmaster-api';
+import iconClose from '../images/close.svg'
 
 const serchQuery = document.querySelector('.header__input');
 const selectEl = document.querySelector('.header__select');
 const searchForm = document.querySelector('.header__form');
 const eventsList = document.querySelector('.events__list');
-const selectCountry = document.querySelector('.countries__input')
+const selectCountry = document.querySelector('.countries__wrapp')
 const countriesList = document.querySelector('.countries__list')
 const backdrop = document.querySelector('.backdrop')
 const modalEl = document.querySelector('.modal')
@@ -123,9 +124,14 @@ async function onSerchQuerySubmit(e) {
     return;
   }
 
+  // if (countryBefore === 'none') {
+  //   countryBefore = ''
+  // }
   countryBefore = ticketmasterAPI.searchCountry;
   ticketmasterAPI.searchQuery = searchValue;
   ticketmasterAPI.page = 0;
+
+
 
   renderBaseMarkup();
 }
@@ -135,72 +141,95 @@ async function renderBaseMarkup() {
     // нужен await, иначе вернется пуской промис, так как, он не будет
     // ждать выполнения запроса на бек
     const response = await ticketmasterAPI.fetchTickets();
-    const baseMarkup = response._embedded.events
     // console.log(response);
+    const baseMarkup = response._embedded.events
     totalPages = response.page.totalPages
-    eventsList.innerHTML = baseMarkup.map(({
-      images: { [5]: { url: previewImgUrl } },
-      name,
-      priceRanges: { [0]: { min: minPrice, max: maxPrice, currency, type } },
-      accessibility: { info },
-      dates: { start: { localDate, localTime } },
-      _embedded: { venues: { [0]: { name: nameOfThePlace, timezone, city: { name: nameOfCity },
-        country: { name: nameOfCountry } }
-      } } }) => {
+    // eventsList.innerHTML = baseMarkup.map(({
+    //   images: { [5]: { url: previewImgUrl } } = {},
+    //   name,
+    //   priceRanges: { [0]: { min: minPrice, max: maxPrice, currency, type } = {} } = {},
+    //   accessibility: { info } = {},
+    //   dates: { start: { localDate, localTime } } = {},
+    //   _embedded: { venues: { [0]: { name: nameOfThePlace, timezone, city: { name: nameOfCity } = {}, country: { name: nameOfCountry } = {} } = {} } = {} } = {}
+    // }) => {
+    eventsList.innerHTML = baseMarkup.map((baseMarkup) => {
+      const noInfo = "иди нахуй"
+      const isVenues = baseMarkup?._embedded?.venues
+      const venues = isVenues?.length && isVenues[0]
+      // console.log(baseMarkup);
+
+      const isPriceRanges = baseMarkup?.priceRanges
+      const priceRanges = isPriceRanges?.length && isPriceRanges[0]
+
+      const name = baseMarkup.name || noInfo
+      const info = baseMarkup?.accessibility?.info || noInfo;
+      const localDate = baseMarkup?.dates?.start?.localDate || noInfo;
+      const localTime = baseMarkup?.dates?.start?.localTime || noInfo;
+      const nameOfThePlace = venues?.name || noInfo;
+      const timezone = venues?.timezone || noInfo;
+      const nameOfCity = venues?.city?.name || noInfo;
+      const nameOfCountry = venues?.country?.name || noInfo;
+      const minPrice = priceRanges?.min || noInfo;
+      const maxPrice = priceRanges?.max || noInfo;
+      const currency = priceRanges?.currency || noInfo;
+      const type = priceRanges?.type || noInfo;
+      const previewImgUrl = baseMarkup?.images[5]?.url || noInfo;
+
+
+      // console.log(info);
+      const cardData = {
+        info, localDate, localTime, timezone, nameOfCity, nameOfCountry,
+        name, minPrice, maxPrice, maxPrice, currency, type, previewImgUrl,
+        localDate, localDate, nameOfThePlace
+      }
+      const encodedCardData = encodeURIComponent(JSON.stringify(cardData));
+
+
+      // console.dir(cardData);
       return `
-          <li class="events__item list">
-            <div class="events__card"
-            data-info="${info}"
-            data-date="${localDate}"
-            data-time="${localTime}"
-            data-timezone="${timezone}"
-            data-city="${nameOfCity}"
-            data-country="${nameOfCountry}"
-            data-who="${name}"
-            data-minPrice="${minPrice}"
-            data-maxPrice="${maxPrice}"
-            data-currency="${currency}"
-            data-type="${type}">
+          <li class="events__item list" data-list=${encodeURIComponent}>
               <img class="events__img" src="${previewImgUrl}" alt="" width="120" height="120">
               <h2 class="events__name">${name}</h2>
               <p class="events__date">${localDate}</p>
               <p class="events__nameOfThePlace">${nameOfThePlace}</p>
-            </div>
           </li>`
     }).join('')
 
     // paginal(ticketmasterAPI.page)
 
   } catch (error) {
-    Report.failure(
-      'Error',
-      'Sorry, no matches were found. Try a new search or use our suggestions.',
-      'Okay'
-    );
-    console.log(err);
+    // Report.failure(
+    //   'Error',
+    //   'Sorry, no matches were found. Try a new search or use our suggestions.',
+    //   'Okay'
+    // );
+    console.error(error);
   }
 }
 
 eventsList.addEventListener('click', openModal)
 
-function openModal(e) {
-  // console.log(e.target);
-  if (e.target.nodeName !== "IMG") {
+function openModal({ target, currentTarget }) {
+  const eventItemEl = document.querySelector('.events__item')
+  // console.dir(target.classList.contains('events__card'));
+
+  if (target.parentNode !== eventItemEl) {
     return
   }
-
-
-
   backdrop.classList.remove('is-hidden')
+  console.log(target.parentNode);
 
-  const data = e.target.parentNode.dataset;
+  const data = target.dataset.list;
+  // console.dir(data);
+
   // console.log(data.timezone);
+  // повесить слушателя на див
   const modalHtml = `
-  <svg class="modal__close" width="24" height="24">
-    <use href="./images/event_booster.svg#icon-close"></use>
-  </svg>
-  <img class="modal__img" src="${e.target.src}" alt="${data.who}" width="100" height="100px">
-  <img class="modal__bigImg" src="${e.target.src}" alt="${data.who}" width="100" height="100px">
+  <div class="modal__closeWrapp">
+    <img class="modal__close" width="24" height="24" src="${iconClose}" alt="">
+  </div>
+  <img class="modal__img" src="${target.src}" alt="${data.name}" width="100" height="100px">
+  <img class="modal__bigImg" src="${target.src}" alt="${data.name}" width="100" height="100px">
   <div class="modal__info modal__div">
     <h2>INFO</h2>
     <p>${data.info}</p>
@@ -214,26 +243,28 @@ function openModal(e) {
     <h2>WHERE</h2>
     <p>${data.city}, ${data.country}</p>
   </div>
+  <div class="modal__afterWhereWrapp">
   <div class="modal__name modal__div">
-    <h2>WHO</h2>
-    <p>${data.name}</p>
+  <h2>WHO</h2>
+  <p>${data.name}</p>
+</div>
+<div class="modal__price modal__div"price>
+  <h2 class="modal__priceTitle">PRICES</h2>
+  <div class="modal__standartPrice modal__div">
+    <p>Standart ${data.minprice} ${data.currency}</p>
+    <button class="modal__standartBtn modal__button">BUY TICKETS</button>
   </div>
-  <div class="modal__price modal__div"price>
-    <h2>PRICES</h2>
-    <div class="modal__standartPrice modal__div">
-      <p>Standart ${data.minprice} ${data.currency}</p>
-      <button class="modal__button">BUY TICKETS</button>
-    </div>
-    <div class="modal__vipPrice modal__div">
-      <p>VIP ${data.maxprice} ${data.currency}</p>
-      <button class="modal__button">BUY TICKETS</button>
-    </div>
+  <div class="modal__vipPrice modal__div">
+    <p>VIP ${data.maxprice} ${data.currency}</p>
+    <button class="modal__button">BUY TICKETS</button>
   </div>
-  <button class="modal__buttonMore modal__button">MORE FROM THIS AUTHOR</button>`
+</div>
+<button class="modal__buttonMore modal__button">MORE FROM THIS AUTHOR</button>
+</div>`
 
   modalEl.innerHTML = modalHtml
 
-  const closeBtn = document.querySelector('.modal__close')
+  const closeBtn = document.querySelector('.modal__closeWrapp')
 
   document.body.style.overflow = 'hidden';
   modalEl.addEventListener('wheel', preventScroll);
@@ -241,19 +272,24 @@ function openModal(e) {
   closeBtn.addEventListener('click', closeModal)
   document.addEventListener('keydown', closeModal)
   document.addEventListener('click', closeModal)
-}
 
-function closeModal(e) {
-  if (e.target === backdrop || e.code === "Escape") {
-    // console.log(123);
-    backdrop.classList.add('is-hidden')
-    document.removeEventListener('keydown', closeModal)
-    document.removeEventListener('click', closeModal)
+  function closeModal(e) {
+    // 🟠почему e.currentTarget - это див?
+    if (e.target === backdrop ||
+      e.currentTarget === closeBtn ||
+      e.code === "Escape") {
+      // console.log(123);
+      backdrop.classList.add('is-hidden')
+      document.removeEventListener('keydown', closeModal)
+      document.removeEventListener('click', closeModal)
 
-    document.body.style.overflow = '';
-    modalEl.removeEventListener('wheel', preventScroll);
+      document.body.style.overflow = '';
+      modalEl.removeEventListener('wheel', preventScroll);
+    }
   }
 }
+
+
 
 function preventScroll(event) {
   // Предотвращаем прокрутку на основной странице
@@ -311,7 +347,12 @@ function renderCountries(arr) {
         <label for="${code}">${name}</label>
       </li>`
   }).join('')
-  countriesList.innerHTML = html;
+  countriesList.innerHTML = `
+  <li class="option list">
+        <input type="radio" class="radio" name="category" id="none">
+        <label for="none">Choose country</label>
+      </li>
+  ${html}`;
   chooseCountry()
 }
 
@@ -323,25 +364,27 @@ function renderCountries(arr) {
   // 🟢сделать див с названиями стран и их id в дата атрибутах
   // 🟢добавить класс хидден и тогглить его по нажатию на див или на страну
   // 🟢сохранить id выбранной страны в value и передавать его в ticketmasterAPI
-// 🔴 Перестал работать фетч
+// 🟢 Перестал работать фетч
 // 🟢 Модалка;
-  // 🔴скролл внутри модалки не работает
-  // 🔴крестика не видно и слушатель на него не вешается
+  // 🟢скролл внутри модалки не работает - дать оверфлоу скролл бекдропу и опустить модалку
+  // 🟢крестика не видно и слушатель на него не вешается
+  // 🟢некоторые свойства ундефайнд - заменить на дефолтное значение
+  // 🟢запихать текст в дивы и расставить отступы от дивов, а не от пешек
+  // 🟢при клике на картинку после переагрузки страницы, бывает, что
+  //    в консоль два раза выводится значение. Мб нужно тогглить евнтлистнер
+  //    по мере открытия/закрытия модалки? — жестко перезагружать после каждой правки
+  // 🟢шрифты для адаптива
   // 🔴поставить свг штрихкоды на прайсы
-  // 🔴некоторые свойства ундефайнд
   // 🔴модалка открывается по нажатию на картинку, а не на див
-  // 🔴запихать текст в дивы и расставить отступы от дивов, а не от пешек
-  // 🔴при клике на картинку после переагрузки траницы, бывает, что
-  //    в консоль два раза выводится значение. Мб нужно тогглить евнтлитнер
-  //    по мере открытия/закрытия модалки?
+  // 🔴адаптив модалки - при таблетке и при десктопе должно быть разное положение дивов
 // 🔴 Пагинация;
   // 🔴 нужна юлка и столько лишек, сколько страничек прикодит от бека
   // 🔴 в каждой лишке ссылка на соответствующую страничку
 // 🔴 пофиксить див со странами
-  // 🔴 если я открыл див со странами, то при нражатии на любую точку вьюпорта,
+  // 🟢 если я открыл див со странами, то при нражатии на любую точку вьюпорта,
   //     кроме этого дива, повесить на него из-хиден
-  // 🔴 ввести поиск вручную по странам
-  // 🔴 добавить возможность выбрать нейтральный вариант, что удалит из
+  // 🔴 свг пропадает при выборе страны
+  // 🟢 добавить возможность выбрать нейтральный вариант, что удалит из
   //     запрса какую либо страну
 // 🔴 растянуть максимальную высоту строки (в две строки), что бы, в случае привышения
 //     размера строки, текст елся тремя точками

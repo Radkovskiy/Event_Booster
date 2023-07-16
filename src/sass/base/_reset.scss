@@ -73,3 +73,38 @@ input {
 //   text-align: center;
 //   letter-spacing: 0.03em;
 // }
+
+.modal {
+  & h2 {
+    font-size: 20px;
+    font-weight: 600;
+
+    @include mq(tablet) {
+      font-size: 20px;
+    }
+
+    @include mq(desktop) {
+      font-size: 24px;
+    }
+  }
+
+  & p {
+    font-size: 16px;
+    font-weight: 400;
+
+    @include mq(tablet) {
+      font-size: 16px;
+    }
+
+    @include mq(desktop) {
+      font-size: 18px;
+    }
+  }
+
+  & button {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+
+}

@@ -9,24 +9,6 @@ export class TicketmasterAPI {
     this.size = 16;
   }
 
-  async fetchEventById(id) {
-    const serchParams = new URLSearchParams({
-      apikey: this.#API_KEY,
-      keyword: this.searchQuery,
-      countryCode: this.searchCountry,
-      page: this.page,
-      size: this.size,
-    });
-
-    const response = await fetch(`${this.#BASE_URL}/${id}?${serchParams}`);
-
-    if (!response.ok) {
-      throw new Error(response.staus);
-    }
-
-    return response.json();
-  }
-
   async fetchTickets() {
     const serchParams = new URLSearchParams({
       apikey: this.#API_KEY,
@@ -35,6 +17,13 @@ export class TicketmasterAPI {
       page: this.page,
       size: this.size,
     });
+
+    if (this.searchCountry === 'none') {
+      this.searchCountry = ''
+    }
+
+    console.log(this.searchCountry);
+
     const response = await fetch(`${this.#BASE_URL}?${serchParams}`);
 
     if (!response.ok) {
@@ -44,3 +33,21 @@ export class TicketmasterAPI {
     return response.json();
   }
 }
+
+  // async fetchEventById(id) {
+  //   const serchParams = new URLSearchParams({
+  //     apikey: this.#API_KEY,
+  //     keyword: this.searchQuery,
+  //     countryCode: this.searchCountry,
+  //     page: this.page,
+  //     size: this.size,
+  //   });
+
+  //   const response = await fetch(`${this.#BASE_URL}/${id}?${serchParams}`);
+
+  //   if (!response.ok) {
+  //     throw new Error(response.staus);
+  //   }
+
+  //   return response.json();
+  // }

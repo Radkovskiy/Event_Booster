@@ -9,13 +9,13 @@
   background: rgba(32, 13, 29, 0.60);
   backdrop-filter: blur(1.5px);
 
-  // overflow: hidden;
+  overflow: scroll;
   // display: none;
 }
 
 .modal {
   position: absolute;
-  top: 50%;
+  top: 63%;
   left: 50%;
   transform: translate(-50%, -50%) scale(1);
 
@@ -36,20 +36,29 @@
     display: flex;
     flex-direction: column;
 
-    padding: 32px 49px 48px 87px;
+    padding: 48px 30px 42px 106px;
     min-width: 704px;
+    min-height: 933px;
 
-    border-top-left-radius:asdasdasd 300px;
+    border-top-left-radius: 300px;
     border-bottom-right-radius: 300px;
     // justify-content: center;
+
+    text-align: left;
+
+  }
+
+  @include mq(desktop) {
+    padding: 54px 74px;
+    min-width: 1034px;
+    min-height: 933px;
   }
 }
 
-.modal__close {
+.modal__closeWrapp {
   position: absolute;
   right: 24px;
   top: 24px;
-  fill: $button-color;
 }
 
 .modal h2 {
@@ -65,12 +74,28 @@
   border-radius: 50px;
   object-fit: cover;
 
+  @include mq(tablet) {
+    width: 70px;
+    height: 70px;
+
+    margin-left: 233px;
+    margin-bottom: 40px;
+  }
+
+  @include mq(desktop) {
+    width: 132px;
+    height: 132px;
+
+    margin-left: 371px;
+
+    border-radius: 70px;
+  }
 }
 
 .modal__bigImg {
-  position: absolute;
-  top: 142px;
-  left: 87px;
+  // position: absolute;
+  // top: 158px;
+  // left: 106px;
 
   width: 249px;
   height: 217px;
@@ -80,21 +105,94 @@
   @include mq(mobile-only) {
     display: none;
   }
+
+  @include mq(desktop) {
+    // top: 226px;
+    // left: 74px;
+
+    width: 427px;
+    height: 326px;
+  }
 }
+
+// .modal__info,
+// .modal__timeDate {
+//   @include mq(tablet) {
+//     margin-left: 281px;
+//   }
+
+//   @include mq(desktop) {
+//     margin-left: 459px;
+//   }
+// }
+
+.modal .modal__location {
+  @include mq(tablet) {
+    // position: relative;
+    // top: 89px;
+  }
+
+  @include mq(desktop) {
+    // top: 0;
+    // margin-left: 459px;
+    // margin-bottom: 50px;
+  }
+}
+
+// .modal__afterWhereWrapp {
+//   @include mq(tablet) {
+//     position: absolute;
+//     top: 454px;
+//   }
+
+//   @include mq(desktop) {
+//     top: 568px;
+//   }
+// }
 
 .modal__div:not(:last-child) {
   margin-bottom: 16px;
-
 }
 
-// 🔴не работает из-за специфичности, верхняя строка перебивает!!!!
-// исправил специфичность, но изменения не отображаются в браузере
+.modal .modal__name {
+  @include mq(desktop) {
+    margin-bottom: 20px;
+  }
+}
+
 .modal .modal__price {
   margin-bottom: 0;
+
+  @include mq(tablet) {
+    display: flex;
+    flex-wrap: wrap;
+  }
 }
 
+.modal__priceTitle {
+  @include mq(tablet) {
+    margin-right: 350px;
+  }
+
+  @include mq(desktop) {
+    margin-right: 550px;
+  }
+}
+
+.modal .modal__standartPrice {
+  @include mq(tablet) {
+    margin-bottom: 0;
+  }
+}
+
+// .modal__standartPrice {
+//   @include mq(tablet) {
+//     margin-right: 117px;
+//   }
+// }
+
 .modal__button {
-  width: 145px;
+  // width: 150px;
   height: 40px;
   border-radius: 5px;
 
@@ -108,12 +206,24 @@
   color: $white;
 
   // &:first-of-type {
-  //   margin-bottom: 16px;
+  //   margin-right: 117px;
   // }
 }
 
+.modal__standartBtn {
+
+  // отступил от кнопки, а не от контейнера
+  @include mq(tablet) {
+    margin-right: 117px;
+  }
+
+  @include mq(desktop) {
+    margin-right: 179px;
+  }
+}
+
 .modal__buttonMore {
-  width: 224px;
+  // width: 224px;
   padding: 10px 3px;
 
   margin-top: 24px;
@@ -121,4 +231,17 @@
   background-color: $modal-color;
   border-color: $button-color;
   color: $button-color;
+
+  @include mq(tablet) {
+    margin-top: 60px;
+    margin-left: 137px;
+
+    padding: 10px 15px;
+
+  }
+
+  @include mq(desktop) {
+    // margin-bottom: 80px;
+    margin-left: 309px;
+  }
 }

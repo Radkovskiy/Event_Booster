@@ -24,7 +24,7 @@
 
   <header>
     <div class="header container">
-      <a class="logo-link" href="index.html">
+      <a class="logo-link" href="./cpark/company.html">
         <div class="logo-square">
           <!-- откуда берутся размеры, если 22 строка не влияет на них? -->
           <svg class="logo" width="180px" height="107px">
@@ -32,6 +32,7 @@
           </svg>
         </div>
       </a>
+
       <h1>Find best events
         around the world</h1>
       <div class="header__wrapp">
@@ -45,13 +46,18 @@
             </button>
           </form>
         </div>
+
         <div class="countries">
-          <div class="countries__input">Choose country
+          <div class="countries__wrapp">Choose country
             <svg class="select-icon" width="15px" height="10px">
               <use href="./images/event_booster.svg#icon-select"></use>
             </svg>
           </div>
           <ul class="countries__list is-hidden">
+            <li class="option list">
+              <input type="radio" class="radio" name="category" id="undefined">
+              <label for="undefined">Choose country</label>
+            </li>
           </ul>
         </div>
       </div>

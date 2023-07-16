@@ -23,7 +23,7 @@
 
 .events__item {
   justify-content: center;
-  height: 330px;
+  // height: 330px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -46,7 +46,7 @@
 }
 
 .events__img {
-  border-top-left-radius: 60px;
+  border-top-left-radius: 50px;
   border-bottom-right-radius: 50px;
   margin-bottom: 8px;
   width: 100%;
@@ -59,8 +59,11 @@
   margin-bottom: 32px;
 
   @include mq(desktop) {
-    width: 288px;
-    height: 200px;
+    width: 267px;
+    height: 220px;
+
+    border-top-left-radius: 100px;
+    border-bottom-right-radius: 100px;
   }
 }
 

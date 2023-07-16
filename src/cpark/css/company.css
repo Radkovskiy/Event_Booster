@@ -1,0 +1,277 @@
+:root {
+  --primary-text-color: #E7E3DA;
+  --secondary-text-color: #232321;
+}
+
+img {
+  display: block;
+}
+
+.list {
+  list-style: none;
+}
+
+.link {
+  text-decoration: none;
+}
+
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  width: 1440px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 120px;
+  padding-right: 112px;
+}
+
+body {
+  font-family: Poppins;
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1;
+
+  color: var(--primary-text-color);
+  background-color: #1D1D1B;
+}
+
+/* 🔴 если дать паддинг на секцию, то в него не войдет бг-имейдж */
+.hero__container {
+  position: relative;
+
+  padding-top: 42px;
+  padding-bottom: 157px;
+  background-image: url(../images/hero-bg-img.png);
+}
+
+.hero__text {
+  width: 174px;
+
+  margin-bottom: 39px;
+
+  font-weight: 700;
+  line-height: 1.36;
+}
+
+.hero__wrapp {
+  display: flex;
+  align-items: center;
+
+  margin-bottom: 166px;
+}
+
+.hero__title {
+  width: 656px;
+
+  margin-right: 160px;
+
+  font-size: 155px;
+  font-weight: 700;
+}
+
+.btn {
+  border: none;
+  border-radius: 50px;
+  background: linear-gradient(90deg, rgba(178, 44, 47, 0.60) 0%, rgba(36, 22, 128, 0.60) 100%);
+  backdrop-filter: blur(3px);
+
+  color: #FFF;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.45px;
+
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.btn-affiliate {
+  padding: 15px 50px;
+  margin-bottom: 15px;
+}
+
+.btn-advertiser {
+  padding: 15px 40px;
+}
+
+/* 🔴 иконка какая-то уродская */
+.expand {
+  position: absolute;
+  top: 627px;
+  right: 49px;
+}
+
+.expand-icon {
+  width: 14px;
+  height: 35px;
+  fill: var(--primary-text-color);
+}
+
+.hero__description {
+  margin-left: auto;
+  width: 810px;
+
+  text-align: end;
+  font-size: 35px;
+  font-weight: 400;
+  line-height: 1.28;
+}
+
+.services {
+  padding-top: 146px;
+  padding-bottom: 86px;
+}
+
+.services__list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.services__item {
+  width: 335px;
+}
+
+/* через гриды в сто раз приятнее, чем ебаться с марджанами */
+.services__item:not(:nth-child(3)):not(:nth-child(5)) {
+  margin-right: 85px;
+}
+
+.services__item:nth-child(-n+2) {
+  margin-bottom: 51px;
+}
+
+.services__svg {
+  fill: var(--primary-text-color);
+  margin-bottom: 16px;
+}
+
+.ticker {
+  width: 100%;
+  display: flex;
+  /* justify-content: center; */
+  /* align-items: center; */
+  /* overflow: hidden; */
+}
+
+.marquee {
+  width: 100%;
+  /* overflow: hidden; */
+  white-space: nowrap;
+  animation: marquee 10s linear infinite;
+}
+
+.marquee span {
+  /* display: inline-block; */
+  /* overflow: hidden; */
+
+  /* padding-right: 100%; */
+  /* animation: marquee-inner 10s linear infinite; */
+
+  font-size: 155px;
+  font-weight: 600;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+
+  100% {
+    transform: translateX(-120%);
+  }
+}
+
+.products {
+  position: relative;
+  padding-top: 200px;
+  padding-bottom: 25px;
+}
+
+.products__title {
+  position: absolute;
+  top: 360px;
+  left: 50px;
+
+  width: 590px;
+
+  background: linear-gradient(90deg, #AC2B33 20%, #241680 80%);
+  -webkit-background-clip: text;
+  /* без этой строки, выеывается на верхнюю */
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transform: rotate(270deg);
+
+  font-size: 75px;
+
+  text-transform: uppercase;
+}
+
+.products__list {
+  font-size: 25px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.products__item {
+  width: 840px;
+  margin-left: auto;
+  margin-right: 70px;
+}
+
+.products__item:not(:last-child) {
+  margin-bottom: 72px;
+}
+
+.buttons {
+  position: relative;
+
+  padding: 261px 0 283px 0;
+}
+
+.buttons__wrapp {
+  display: flex;
+  flex-direction: column;
+
+  margin-left: 160px;
+}
+
+
+.buttons__wrapp .btn {
+  width: 240px;
+  background: linear-gradient(90deg, #B22C2F 0%, #241680 100%);
+}
+
+.first-stone {
+  position: absolute;
+  top: 0;
+  right: 30px;
+  z-index: 2;
+
+  width: 659px;
+  height: 659px;
+
+  background-image: url(../images/company/first-stone.png);
+}
+
+.second-stone {
+  position: absolute;
+  top: 130px;
+  right: 395px;
+  z-index: 1;
+
+  width: 540px;
+  height: 540px;
+
+  background-image: url(../images/company/second-stone.png);
+}
