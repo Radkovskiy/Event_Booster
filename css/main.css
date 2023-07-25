@@ -220,9 +220,15 @@ input {
   }
 }
 
+.modal__firstWrapp {
+  display: flex;
+}
+
 .modal__bigImg {
   width: 249px;
   height: 217px;
+  margin-right: 32px;
+  margin-bottom: 16px;
   object-fit: cover;
 }
 @media screen and (max-width: 767.98px) {
@@ -234,6 +240,28 @@ input {
   .modal__bigImg {
     width: 427px;
     height: 326px;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .modal__location-desktop {
+    display: none;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .modal__location-desktop {
+    display: block;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .modal__location-tablet {
+    display: block;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .modal__location-tablet {
+    display: none;
   }
 }
 

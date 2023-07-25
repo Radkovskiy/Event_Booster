@@ -22,7 +22,7 @@ export class TicketmasterAPI {
       this.searchCountry = ''
     }
 
-    console.log(this.searchCountry);
+    // console.log(this.searchCountry);
 
     const response = await fetch(`${this.#BASE_URL}?${serchParams}`);
 

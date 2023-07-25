@@ -92,13 +92,16 @@
   }
 }
 
-.modal__bigImg {
-  // position: absolute;
-  // top: 158px;
-  // left: 106px;
+.modal__firstWrapp {
+  display: flex;
+  // flex-direction: column;
+}
 
+.modal__bigImg {
   width: 249px;
   height: 217px;
+  margin-right: 32px;
+  margin-bottom: 16px;
 
   object-fit: cover;
 
@@ -107,24 +110,30 @@
   }
 
   @include mq(desktop) {
-    // top: 226px;
-    // left: 74px;
-
     width: 427px;
     height: 326px;
   }
 }
 
-// .modal__info,
-// .modal__timeDate {
-//   @include mq(tablet) {
-//     margin-left: 281px;
-//   }
+.modal__location-desktop {
+  @include mq(tablet) {
+    display: none;
+  }
 
-//   @include mq(desktop) {
-//     margin-left: 459px;
-//   }
-// }
+  @include mq(desktop) {
+    display: block;
+  }
+}
+
+.modal__location-tablet {
+  @include mq(tablet) {
+    display: block;
+  }
+
+  @include mq(desktop) {
+    display: none;
+  }
+}
 
 .modal .modal__location {
   @include mq(tablet) {

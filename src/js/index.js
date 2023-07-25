@@ -144,14 +144,7 @@ async function renderBaseMarkup() {
     // console.log(response);
     const baseMarkup = response._embedded.events
     totalPages = response.page.totalPages
-    // eventsList.innerHTML = baseMarkup.map(({
-    //   images: { [5]: { url: previewImgUrl } } = {},
-    //   name,
-    //   priceRanges: { [0]: { min: minPrice, max: maxPrice, currency, type } = {} } = {},
-    //   accessibility: { info } = {},
-    //   dates: { start: { localDate, localTime } } = {},
-    //   _embedded: { venues: { [0]: { name: nameOfThePlace, timezone, city: { name: nameOfCity } = {}, country: { name: nameOfCountry } = {} } = {} } = {} } = {}
-    // }) => {
+
     eventsList.innerHTML = baseMarkup.map((baseMarkup) => {
       const noInfo = "иди нахуй"
       const isVenues = baseMarkup?._embedded?.venues
@@ -185,9 +178,10 @@ async function renderBaseMarkup() {
       const encodedCardData = encodeURIComponent(JSON.stringify(cardData));
 
 
-      // console.dir(cardData);
+      // console.log(JSON.parse(decode));
+      // console.log(encodedCardData);
       return `
-          <li class="events__item list" data-list=${encodeURIComponent}>
+          <li class="events__item list" data-list=${encodedCardData}>
               <img class="events__img" src="${previewImgUrl}" alt="" width="120" height="120">
               <h2 class="events__name">${name}</h2>
               <p class="events__date">${localDate}</p>
@@ -210,57 +204,67 @@ async function renderBaseMarkup() {
 eventsList.addEventListener('click', openModal)
 
 function openModal({ target, currentTarget }) {
-  const eventItemEl = document.querySelector('.events__item')
-  // console.dir(target.classList.contains('events__card'));
-
-  if (target.parentNode !== eventItemEl) {
+  if (target.nodeName === 'UL') {
     return
   }
+
+  let data = null
+
+  if (target.nodeName === 'LI') {
+    data = target.dataset.list;
+  } else {
+    data = target.parentNode.dataset.list;
+  }
+  const parce = JSON.parse(decodeURIComponent(data))
+  // console.log(parce);
   backdrop.classList.remove('is-hidden')
-  console.log(target.parentNode);
+  const { name, info, localDate, localTime, timezone, nameOfCity, nameOfCountry, minPrice, maxPrice, currency } = parce;
 
-  const data = target.dataset.list;
-  // console.dir(data);
-
-  // console.log(data.timezone);
-  // повесить слушателя на див
   const modalHtml = `
   <div class="modal__closeWrapp">
     <img class="modal__close" width="24" height="24" src="${iconClose}" alt="">
   </div>
-  <img class="modal__img" src="${target.src}" alt="${data.name}" width="100" height="100px">
-  <img class="modal__bigImg" src="${target.src}" alt="${data.name}" width="100" height="100px">
-  <div class="modal__info modal__div">
-    <h2>INFO</h2>
-    <p>${data.info}</p>
-  </div>
-  <div class="modal__timeDate modal__div">
-    <h2>WHEN</h2>
-    <p class="modal__date">${data.date}</p>
-    <p>${data.time} (${data.timezone})</p>
-  </div>
-  <div class="modal__location modal__div">
-    <h2>WHERE</h2>
-    <p>${data.city}, ${data.country}</p>
+  <img class="modal__img" src="${target.src}" alt="${name}" width="100" height="100px">
+  <div class="modal__firstWrapp">
+    <img class="modal__bigImg" src="${target.src}" alt="${name}" width="100" height="100px">
+    <div class="">
+      <div class="modal__info modal__div">
+        <h2>INFO</h2>
+        <p>${info}</p>
+      </div>
+      <div class="modal__timeDate modal__div">
+        <h2>WHEN</h2>
+        <p>${localDate}</p>
+        <p>${localTime} (${timezone})</p>
+      </div>
+      <div class="modal__location-desktop modal__div">
+        <h2>WHERE</h2>
+        <p>${nameOfCity}, ${nameOfCountry}</p>
+      </div>
+    </div>
   </div>
   <div class="modal__afterWhereWrapp">
-  <div class="modal__name modal__div">
-  <h2>WHO</h2>
-  <p>${data.name}</p>
-</div>
-<div class="modal__price modal__div"price>
-  <h2 class="modal__priceTitle">PRICES</h2>
-  <div class="modal__standartPrice modal__div">
-    <p>Standart ${data.minprice} ${data.currency}</p>
-    <button class="modal__standartBtn modal__button">BUY TICKETS</button>
-  </div>
-  <div class="modal__vipPrice modal__div">
-    <p>VIP ${data.maxprice} ${data.currency}</p>
-    <button class="modal__button">BUY TICKETS</button>
-  </div>
-</div>
-<button class="modal__buttonMore modal__button">MORE FROM THIS AUTHOR</button>
-</div>`
+    <div class="modal__location-tablet modal__div">
+        <h2>WHERE</h2>
+        <p>${nameOfCity}, ${nameOfCountry}</p>
+      </div>
+    <div class="modal__name modal__div">
+       <h2>WHO</h2>
+       <p>${name}</p>
+     </div>
+    <div class="modal__price modal__div" price>
+     <h2 class="modal__priceTitle">PRICES</h2>
+     <div class="modal__standartPrice modal__div">
+      <p>Standart ${minPrice} ${currency}</p>
+       <button class="modal__standartBtn modal__button">BUY TICKETS</button>
+     </div>
+     <div class="modal__vipPrice modal__div">
+      <p>VIP ${maxPrice} ${currency}</p>
+      <button class="modal__button">BUY TICKETS</button>
+     </div>
+    </div>
+    <button class="modal__buttonMore modal__button">MORE FROM THIS AUTHOR</button>
+  </div>`
 
   modalEl.innerHTML = modalHtml
 
@@ -374,9 +378,10 @@ function renderCountries(arr) {
   //    в консоль два раза выводится значение. Мб нужно тогглить евнтлистнер
   //    по мере открытия/закрытия модалки? — жестко перезагружать после каждой правки
   // 🟢шрифты для адаптива
+  // 🟢модалка открывается по нажатию на картинку, а не на див
   // 🔴поставить свг штрихкоды на прайсы
-  // 🔴модалка открывается по нажатию на картинку, а не на див
   // 🔴адаптив модалки - при таблетке и при десктопе должно быть разное положение дивов
+  // 🔴если нажать чуть правее картинки, то она не будет подгружаться в модалку
 // 🔴 Пагинация;
   // 🔴 нужна юлка и столько лишек, сколько страничек прикодит от бека
   // 🔴 в каждой лишке ссылка на соответствующую страничку
