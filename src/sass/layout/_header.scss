@@ -169,28 +169,17 @@
   @include mq(tablet) {
     right: 323px;
   }
-
-  // @include mq(desktop) {
-  //   right: 294px;
-  // }
 }
 
-// .magnifying {
-//   // position: absolute;
-//   // top: 14px;
-//   // right: 25px;
-
-// }
-
 .countries {
+  position: relative;
+
   @include mq(mobile-only) {
     margin-top: 24px;
   }
 }
 
 .countries__wrapp {
-  position: relative;
-
   width: 276px;
   border-radius: 20px;
   padding-left: 32.49px;
@@ -207,10 +196,14 @@
   line-height: 19.5px;
 }
 
+// 🟠 z-index и pointer-events — это цирк просто
 .select-icon {
   position: absolute;
   top: 17px;
   right: 21px;
+  z-index: 10;
+  pointer-events: none;
+
   fill: $text-color;
 }
 
@@ -234,7 +227,6 @@
   cursor: pointer;
   overflow-y: scroll;
 
-  // не работают команды ниже
   scrollbar-width: 5px;
   scrollbar-color: $title-color;
 }

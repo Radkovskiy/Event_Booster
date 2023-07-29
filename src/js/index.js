@@ -11,91 +11,7 @@ const selectCountry = document.querySelector('.countries__wrapp')
 const countriesList = document.querySelector('.countries__list')
 const backdrop = document.querySelector('.backdrop')
 const modalEl = document.querySelector('.modal')
-const countries = [
-  { code: "US", name: "United States Of America" },
-  { code: "AD", name: "Andorra" },
-  { code: "AI", name: "Anguilla" },
-  { code: "AR", name: "Argentina" },
-  { code: "AU", name: "Australia" },
-  { code: "AT", name: "Austria" },
-  { code: "AZ", name: "Azerbaijan" },
-  { code: "BS", name: "Bahamas" },
-  { code: "BH", name: "Bahrain" },
-  { code: "BB", name: "Barbados" },
-  { code: "BE", name: "Belgium" },
-  { code: "BM", name: "Bermuda" },
-  { code: "BR", name: "Brazil" },
-  { code: "BG", name: "Bulgaria" },
-  { code: "CA", name: "Canada" },
-  { code: "CL", name: "Chile" },
-  { code: "CN", name: "China" },
-  { code: "CO", name: "Colombia" },
-  { code: "CR", name: "Costa Rica" },
-  { code: "HR", name: "Croatia" },
-  { code: "CY", name: "Cyprus" },
-  { code: "CZ", name: "Czech Republic" },
-  { code: "DK", name: "Denmark" },
-  { code: "DO", name: "Dominican Republic" },
-  { code: "EC", name: "Ecuador" },
-  { code: "EE", name: "Estonia" },
-  { code: "FO", name: "Faroe Islands" },
-  { code: "FI", name: "Finland" },
-  { code: "FR", name: "France" },
-  { code: "GE", name: "Georgia" },
-  { code: "DE", name: "Germany" },
-  { code: "GH", name: "Ghana" },
-  { code: "GI", name: "Gibraltar" },
-  { code: "GB", name: "Great Britain" },
-  { code: "GR", name: "Greece" },
-  { code: "HK", name: "Hong Kong" },
-  { code: "HU", name: "Hungary" },
-  { code: "IS", name: "Iceland" },
-  { code: "IN", name: "India" },
-  { code: "IE", name: "Ireland" },
-  { code: "IL", name: "Israel" },
-  { code: "IT", name: "Italy" },
-  { code: "JM", name: "Jamaica" },
-  { code: "JP", name: "Japan" },
-  { code: "KR", name: "Korea, Republic of" },
-  { code: "LV", name: "Latvia" },
-  { code: "LB", name: "Lebanon" },
-  { code: "LT", name: "Lithuania" },
-  { code: "LU", name: "Luxembourg" },
-  { code: "MY", name: "Malaysia" },
-  { code: "MT", name: "Malta" },
-  { code: "MX", name: "Mexico" },
-  { code: "MC", name: "Monaco" },
-  { code: "ME", name: "Montenegro" },
-  { code: "MA", name: "Morocco" },
-  { code: "NL", name: "Netherlands" },
-  { code: "AN", name: "Netherlands Antilles" },
-  { code: "NZ", name: "New Zealand" },
-  { code: "ND", name: "Northern Ireland" },
-  { code: "NO", name: "Norway" },
-  { code: "PE", name: "Peru" },
-  { code: "PL", name: "Poland" },
-  { code: "PT", name: "Portugal" },
-  { code: "RO", name: "Romania" },
-  { code: "RU", name: "Russian Federation" },
-  { code: "LC", name: "Saint Lucia" },
-  { code: "SA", name: "Saudi Arabia" },
-  { code: "RS", name: "Serbia" },
-  { code: "SG", name: "Singapore" },
-  { code: "SK", name: "Slovakia" },
-  { code: "SI", name: "Slovenia" },
-  { code: "ZA", name: "South Africa" },
-  { code: "ES", name: "Spain" },
-  { code: "SE", name: "Sweden" },
-  { code: "CH", name: "Switzerland" },
-  { code: "TW", name: "Taiwan" },
-  { code: "TH", name: "Thailand" },
-  { code: "TT", name: "Trinidad and Tobago" },
-  { code: "TR", name: "Turkey" },
-  { code: "UA", name: "Ukraine" },
-  { code: "AE", name: "United Arab Emirates" },
-  { code: "UY", name: "Uruguay" },
-  { code: "VE", name: "Venezuela" }
-];
+import { countries } from './constants'
 const pagesEl = document.querySelector('.events__pages')
 let totalPages = 0
 
@@ -108,6 +24,7 @@ renderCountries(countries)
 renderBaseMarkup()
 // кинул евентлистнер на форму, а не на инпут
 searchForm.addEventListener('submit', onSerchQuerySubmit);
+pagesEl.addEventListener('click', fetchAnotherPage)
 
 // запрос на бек
 async function onSerchQuerySubmit(e) {
@@ -183,13 +100,13 @@ async function renderBaseMarkup() {
       return `
           <li class="events__item list" data-list=${encodedCardData}>
               <img class="events__img" src="${previewImgUrl}" alt="" width="120" height="120">
-              <h2 class="events__name">${name}</h2>
+              <h2 class="events__name">${name.slice(0, 30)}${name.length > 30 && '...'}</h2>
               <p class="events__date">${localDate}</p>
               <p class="events__nameOfThePlace">${nameOfThePlace}</p>
           </li>`
     }).join('')
 
-    // paginal(ticketmasterAPI.page)
+    renderPaginal(ticketmasterAPI.page)
 
   } catch (error) {
     // Report.failure(
@@ -203,7 +120,7 @@ async function renderBaseMarkup() {
 
 eventsList.addEventListener('click', openModal)
 
-function openModal({ target, currentTarget }) {
+function openModal({ target }) {
   if (target.nodeName === 'UL') {
     return
   }
@@ -218,15 +135,15 @@ function openModal({ target, currentTarget }) {
   const parce = JSON.parse(decodeURIComponent(data))
   // console.log(parce);
   backdrop.classList.remove('is-hidden')
-  const { name, info, localDate, localTime, timezone, nameOfCity, nameOfCountry, minPrice, maxPrice, currency } = parce;
+  const { name, previewImgUrl, info, localDate, localTime, timezone, nameOfCity, nameOfCountry, minPrice, maxPrice, currency } = parce;
 
   const modalHtml = `
   <div class="modal__closeWrapp">
     <img class="modal__close" width="24" height="24" src="${iconClose}" alt="">
   </div>
-  <img class="modal__img" src="${target.src}" alt="${name}" width="100" height="100px">
+  <img class="modal__img" src="${previewImgUrl}" alt="${name}" width="100" height="100px">
   <div class="modal__firstWrapp">
-    <img class="modal__bigImg" src="${target.src}" alt="${name}" width="100" height="100px">
+    <img class="modal__bigImg" src="${previewImgUrl}" alt="${name}" width="100" height="100px">
     <div class="">
       <div class="modal__info modal__div">
         <h2>INFO</h2>
@@ -255,11 +172,17 @@ function openModal({ target, currentTarget }) {
     <div class="modal__price modal__div" price>
      <h2 class="modal__priceTitle">PRICES</h2>
      <div class="modal__standartPrice modal__div">
-      <p>Standart ${minPrice} ${currency}</p>
+      <svg class="barcode" width="24" height="16">
+        <use href="../images/event_booster.svg#icon-barcode"></use>
+      </svg>
+      <p class="priceText">Standart ${minPrice} ${currency}</p>
        <button class="modal__standartBtn modal__button">BUY TICKETS</button>
      </div>
      <div class="modal__vipPrice modal__div">
-      <p>VIP ${maxPrice} ${currency}</p>
+      <svg class="barcode" width="24" height="16">
+        <use href="../images/event_booster.svg#icon-barcode"></use>
+      </svg>
+      <p class="priceText">VIP ${maxPrice} ${currency}</p>
       <button class="modal__button">BUY TICKETS</button>
      </div>
     </div>
@@ -299,49 +222,81 @@ function preventScroll(event) {
   // Предотвращаем прокрутку на основной странице
   event.stopPropagation();
 }
-// функция должна рендерить лишки с номерами страниц
-// function paginal(currentPage) {
+//
+function renderPaginal(ticketPage) {
 
-//   let pagesArr = []
+  const currentPage = Number(ticketPage)
+  let btnsArr = []
 
 
-//   if (totalPages === 1) {
-//     list.innerHTML = '';
-//     return;
-//   }
+  if (totalPages === 1) {
+    list.innerHTML = '';
+    return;
+  }
 
-//   for (let i = 1; i <= totalPages; i++) {  // вместо "3" ебануть переменную "totalPages"
-//     pagesArr.push(`<button class="paginalBtn">${i}</button>`)
-//   }
-//   // console.log(pagesArr);
-//   const paginalBtn = document.querySelector('.paginalBtn')
-//   paginalBtn.addEventListener('click', callback)
-//   function callback(numPage) {
-//     try {
-//       console.log(ticketmasterAPI.page);
-//       // const response = await ticketmasterAPI.fetchTickets();
-//       // const baseMarkup = response._embedded.events
-//       // eventsList.innerHTML = baseMarkup.map(({ images: { [5]: { url: previewImgUrl } }, name, dates: { start: { localDate } }, _embedded: { venues: { [0]: { name: nameOfThePlace } } } }) => {
-//       //   return `
-//       //       <li class="events__item list">
-//       //         <div class="events__card">
-//       //           <img class="events__img" src="${previewImgUrl}" alt="" width="120" height="120">
-//       //           <h2 class="events__name">${name}</h2>
-//       //           <p class="events__date">${localDate}</p>
-//       //           <p class="events__nameOfThePlace">${nameOfThePlace}</p>
-//       //         </div>
-//       //       </li>`
-//       // }).join('')
-//     } catch (error) {
-//       Report.failure(
-//         'Error',
-//         'Sorry, no matches were found. Try a new search or use our suggestions.',
-//         'Okay'
-//       );
-//       console.log(err);
-//     }
-//     pagesEl.innerHTML = pagesArr.join('')
-//   }
+  for (let i = 1; i <= totalPages; i++) {
+    btnsArr.push(`<button class="paginalBtn ${currentPage === i || currentPage === 0 && i === 1 ? 'activePage' : ''}">${i}</button>`)
+  }
+  if (totalPages <= 5 && totalPages > 0) {
+    pagesEl.innerHTML = btnsArr.join('');
+  } else if (totalPages > 0) {
+    if (currentPage >= totalPages - 3) {
+      pagesEl.innerHTML =
+        btnsArr[0] +
+        '...' +
+        btnsArr[currentPage - 1] +
+        btnsArr[currentPage - 2] +
+        btnsArr.slice(currentPage, currentPage + 3).join('');
+    } else if (currentPage > 0 && currentPage < 2) {
+      pagesEl.innerHTML =
+        btnsArr[currentPage - 1] +
+        btnsArr.slice(currentPage, currentPage + 2).join('') +
+        '...' +
+        btnsArr[totalPages - 1];
+    } else if (currentPage === 2) {
+      pagesEl.innerHTML =
+        btnsArr[0] +
+        btnsArr[currentPage - 1] +
+        btnsArr.slice(currentPage, currentPage + 2).join('') +
+        '...' +
+        btnsArr[totalPages - 1];
+    } else if (currentPage > 2) {
+      const list = currentPage !== 3 ? btnsArr[0] +
+        '...' +
+        btnsArr[currentPage - 2] +
+        btnsArr[currentPage - 1] +
+        btnsArr.slice(currentPage, currentPage + 1).join('') +
+        '...' +
+        btnsArr[totalPages - 1] : btnsArr[0] +
+        btnsArr[currentPage - 2] +
+        btnsArr[currentPage - 1] +
+        btnsArr.slice(currentPage, currentPage + 1).join('') +
+        '...' +
+      btnsArr[totalPages - 1];
+      pagesEl.innerHTML = list
+    } else {
+
+      pagesEl.innerHTML =
+        btnsArr.slice(currentPage, currentPage + 3).join('') +
+        '...' +
+        btnsArr[totalPages - 1];
+    }
+  } else {
+    pagesEl.innerHTML =
+      btnsArr.slice(currentPage, currentPage + 3).join('') +
+      '...' +
+      btnsArr[totalPages - 1];
+  }
+}
+
+function fetchAnotherPage(e) {
+  e.preventDefault()
+  if (e.target.nodeName !== 'BUTTON') {
+    return
+  }
+  ticketmasterAPI.page = e.target.textContent
+  renderBaseMarkup();
+}
 
 function renderCountries(arr) {
   const html = arr.map(({ code, name }) => {
@@ -360,16 +315,18 @@ function renderCountries(arr) {
   chooseCountry()
 }
 
-
-// 🟢 Сделать так, что бы при новом поиске, все стиралось и рендерилось заново;
-// 🟢 Использовать слайс или цсс для максимальной ширины строки;
-  // сделал, но помещается текст только одной строки
-// 🟢 Добавить поиск по странам
-  // 🟢сделать див с названиями стран и их id в дата атрибутах
-  // 🟢добавить класс хидден и тогглить его по нажатию на див или на страну
-  // 🟢сохранить id выбранной страны в value и передавать его в ticketmasterAPI
-// 🟢 Перестал работать фетч
-// 🟢 Модалка;
+// 🔴 сделать красивый error
+// 🔴 разсортировать блоки кода по отдельным файлам
+// 🔴 Модалка;
+  // 🔴поставить свг штрихкоды на прайсы - поставил, но их не видно
+  // 🔴модалку опускать ниже нужно только, когда ивент имеет очень много
+  //    текста в инфо, только тогда можалка уходит наверх. Если же ивент
+  //    имеет мало текста в инфо, то модалка спускается неестественно низко. Плюс к этому,
+  //    сверху модалки много места и видно бекдроп, в то же время, модалка прислонена к низу
+  //    сайта, получается несиметрично и некрасиво. Пробовал давать паддинги/марджаны и
+  //    бекдропу и модалке — ничего не меняется.
+  //    Как всё это пофиксить?
+  // 🟢если нажать чуть правее картинки, то она не будет подгружаться в модалку
   // 🟢скролл внутри модалки не работает - дать оверфлоу скролл бекдропу и опустить модалку
   // 🟢крестика не видно и слушатель на него не вешается
   // 🟢некоторые свойства ундефайнд - заменить на дефолтное значение
@@ -379,19 +336,31 @@ function renderCountries(arr) {
   //    по мере открытия/закрытия модалки? — жестко перезагружать после каждой правки
   // 🟢шрифты для адаптива
   // 🟢модалка открывается по нажатию на картинку, а не на див
-  // 🔴поставить свг штрихкоды на прайсы
-  // 🔴адаптив модалки - при таблетке и при десктопе должно быть разное положение дивов
-  // 🔴если нажать чуть правее картинки, то она не будет подгружаться в модалку
-// 🔴 Пагинация;
-  // 🔴 нужна юлка и столько лишек, сколько страничек прикодит от бека
-  // 🔴 в каждой лишке ссылка на соответствующую страничку
-// 🔴 пофиксить див со странами
+  // 🟢адаптив модалки - при таблетке и при десктопе должно быть разное положение дивов
+// 🟢 Сделать так, что бы при новом поиске, все стиралось и рендерилось заново;
+// 🟢 Использовать слайс или цсс для максимальной ширины строки;
+  // сделал, но помещается текст только одной строки
+// 🟢 Добавить поиск по странам
+  // 🟢сделать див с названиями стран и их id в дата атрибутах
+  // 🟢добавить класс хидден и тогглить его по нажатию на див или на страну
+  // 🟢сохранить id выбранной страны в value и передавать его в ticketmasterAPI
+// 🟢 Перестал работать фетч
+// 🟢 Пагинация;
+  // 🟢 подсвечивать currentPage на первой страничке в условии № 2
+  // 🟢 подсвечивать currentPage
+  // 🟢 три точки между страничками, если их много
+  // кажется, что в при запросе на нба и нажатии на странички, никакого запроса не
+  // происходит но в нетворке все заебись(фетч с номером запрашиваемой страницы и статус ОК)
+  // 🟢 нужен див и столько баттанов, сколько страничек прикодит от бека
+  // 🟢 в каждой лишке ссылка на соответствующую страничку
+// 🟢 пофиксить див со странами
+  // 🟢 свг лепится сверху даже моалки, при том, что
+  //     у свг z-index: 1, а у модлаки — 999
   // 🟢 если я открыл див со странами, то при нражатии на любую точку вьюпорта,
   //     кроме этого дива, повесить на него из-хиден
-  // 🔴 свг пропадает при выборе страны
+  // 🟢 свг пропадает при выборе страны
   // 🟢 добавить возможность выбрать нейтральный вариант, что удалит из
   //     запрса какую либо страну
-// 🔴 растянуть максимальную высоту строки (в две строки), что бы, в случае привышения
-//     размера строки, текст елся тремя точками
-
-
+// 🟢 растянуть максимальную высоту строки (в две строки), что бы, в случае привышения
+//     размера строки, текст елся тремя точками.
+//     🟢Слайс сделал, но как по условию добавить 3 точки — хз

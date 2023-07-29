@@ -1,8 +1,12 @@
 .backdrop {
   position: fixed;
-  z-index: 1;
+  z-index: 20;
   width: 100%;
   height: 100%;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   padding: 20px;
 
@@ -10,22 +14,20 @@
   backdrop-filter: blur(1.5px);
 
   overflow: scroll;
-  // display: none;
 }
 
 .modal {
   position: absolute;
-  top: 63%;
+  top: 100%;
   left: 50%;
   transform: translate(-50%, -50%) scale(1);
+  z-index: 30;
 
   padding: 80px 21px 100px 16px;
   min-width: 280px;
 
   border-top-left-radius: 150px;
   border-bottom-right-radius: 150px;
-  // width: 100%;
-  // padding: 20px;
 
   background-color: $modal-color;
   color: $background-color;
@@ -42,7 +44,6 @@
 
     border-top-left-radius: 300px;
     border-bottom-right-radius: 300px;
-    // justify-content: center;
 
     text-align: left;
 
@@ -94,7 +95,6 @@
 
 .modal__firstWrapp {
   display: flex;
-  // flex-direction: column;
 }
 
 .modal__bigImg {
@@ -135,30 +135,6 @@
   }
 }
 
-.modal .modal__location {
-  @include mq(tablet) {
-    // position: relative;
-    // top: 89px;
-  }
-
-  @include mq(desktop) {
-    // top: 0;
-    // margin-left: 459px;
-    // margin-bottom: 50px;
-  }
-}
-
-// .modal__afterWhereWrapp {
-//   @include mq(tablet) {
-//     position: absolute;
-//     top: 454px;
-//   }
-
-//   @include mq(desktop) {
-//     top: 568px;
-//   }
-// }
-
 .modal__div:not(:last-child) {
   margin-bottom: 16px;
 }
@@ -178,6 +154,10 @@
   }
 }
 
+.barcode {
+  fill: $black;
+}
+
 .modal__priceTitle {
   @include mq(tablet) {
     margin-right: 350px;
@@ -194,14 +174,12 @@
   }
 }
 
-// .modal__standartPrice {
-//   @include mq(tablet) {
-//     margin-right: 117px;
-//   }
-// }
+.modal__standartPrice,
+.modal__vipPrice {
+  // display: flex;
+}
 
 .modal__button {
-  // width: 150px;
   height: 40px;
   border-radius: 5px;
 
@@ -213,10 +191,6 @@
   background-color: $button-color;
   border-color: $button-color;
   color: $white;
-
-  // &:first-of-type {
-  //   margin-right: 117px;
-  // }
 }
 
 .modal__standartBtn {
@@ -232,7 +206,6 @@
 }
 
 .modal__buttonMore {
-  // width: 224px;
   padding: 10px 3px;
 
   margin-top: 24px;
@@ -250,7 +223,6 @@
   }
 
   @include mq(desktop) {
-    // margin-bottom: 80px;
     margin-left: 309px;
   }
 }

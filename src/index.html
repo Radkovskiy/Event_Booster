@@ -15,26 +15,20 @@
 
 <body>
   <div class="backdrop is-hidden">
-    <div class="container">
-      <div class="modal">
-
-      </div>
-    </div>
+      <div class="modal"></div>
   </div>
 
   <header>
     <div class="header container">
       <a class="logo-link" href="#">
         <div class="logo-square">
-          <!-- откуда берутся размеры, если 22 строка не влияет на них? -->
           <svg class="logo" width="180px" height="107px">
             <use href="./images/event_booster.svg#icon-logo"></use>
           </svg>
         </div>
       </a>
 
-      <h1>Find best events
-        around the world</h1>
+      <h1>Find best events around the world</h1>
       <div class="header__wrapp">
         <div class="header__inputWrapp">
           <form class="header__form" action="">
@@ -48,10 +42,10 @@
         </div>
 
         <div class="countries">
+          <svg class="select-icon" width="15px" height="10px">
+            <use href="./images/event_booster.svg#icon-select"></use>
+          </svg>
           <div class="countries__wrapp">Choose country
-            <svg class="select-icon" width="15px" height="10px">
-              <use href="./images/event_booster.svg#icon-select"></use>
-            </svg>
           </div>
           <ul class="countries__list is-hidden">
             <li class="option list">
@@ -69,12 +63,14 @@
       <div class="container events__wrapp">
         <ul class="events__list"></ul>
       </div>
-      <div class="events__pages"></div>
+      <div class="container">
+        <div class="events__pages"></div>
+      </div>
     </section>
   </main>
   <footer>
     <div class="footer container">
-      <p class="footer__text">© 2021 | All Rights Reserved |
+      <p class="footer__text">© 2023 | All Rights Reserved |
         Developed with ❤ by GoIT Students</p>
     </div>
   </footer>
