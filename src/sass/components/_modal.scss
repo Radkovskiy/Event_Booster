@@ -156,6 +156,7 @@
 
 .barcode {
   fill: $black;
+  margin-right: 13px;
 }
 
 .modal__priceTitle {
@@ -174,9 +175,12 @@
   }
 }
 
-.modal__standartPrice,
-.modal__vipPrice {
-  // display: flex;
+.modal__priceWrapp {
+  display: flex;
+
+  @include mq(mobile-only) {
+    justify-content: center;
+  }
 }
 
 .modal__button {
@@ -190,7 +194,8 @@
 
   background-color: $button-color;
   border-color: $button-color;
-  color: $white;
+
+  cursor: pointer;
 }
 
 .modal__standartBtn {
@@ -203,6 +208,10 @@
   @include mq(desktop) {
     margin-right: 179px;
   }
+}
+
+.modal__buyLink {
+  color: $white;
 }
 
 .modal__buttonMore {

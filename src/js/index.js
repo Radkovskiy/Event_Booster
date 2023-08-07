@@ -1,19 +1,22 @@
 import countrySelector from './country-selector';
 import { chooseCountry } from './country-selector';
 import { TicketmasterAPI } from './ticketmaster-api';
+import { Report } from 'notiflix/build/notiflix-report-aio';
 import iconClose from '../images/close.svg'
 
-const serchQuery = document.querySelector('.header__input');
-const selectEl = document.querySelector('.header__select');
 const searchForm = document.querySelector('.header__form');
 const eventsList = document.querySelector('.events__list');
-const selectCountry = document.querySelector('.countries__wrapp')
 const countriesList = document.querySelector('.countries__list')
 const backdrop = document.querySelector('.backdrop')
 const modalEl = document.querySelector('.modal')
 import { countries } from './constants'
 const pagesEl = document.querySelector('.events__pages')
 let totalPages = 0
+const iconBarcodeSVG = `
+  <svg class="barcode" width="24" height="16" viewBox="0 0 45 32">
+    <path d="M5.02 1.569H0v30.118h5.02V1.569zM17.645 1.569h-5.02v30.118h5.02V1.569zM25.25 1.569h-5.019v30.118h5.019V1.569zM45.177 1.569h-7.453v30.118h7.453V1.569zM10.039 1.569H7.605v30.118h2.434V1.569zM30.118 1.569h-2.434v30.118h2.434V1.569zM35.137 1.569h-2.434v30.118h2.434V1.569z" />
+  </svg>
+`;
 
 
 export const ticketmasterAPI = new TicketmasterAPI();
@@ -26,13 +29,13 @@ renderBaseMarkup()
 searchForm.addEventListener('submit', onSerchQuerySubmit);
 pagesEl.addEventListener('click', fetchAnotherPage)
 
-// запрос на бек
 async function onSerchQuerySubmit(e) {
   e.preventDefault();
 
   const searchValue = e.currentTarget.elements.serchQuery.value;
   let searchQuery = ticketmasterAPI.searchQuery;
 
+  console.log(ticketmasterAPI.searchCountry);
 
   if (
     searchQuery === searchValue && searchValue &&
@@ -41,9 +44,6 @@ async function onSerchQuerySubmit(e) {
     return;
   }
 
-  // if (countryBefore === 'none') {
-  //   countryBefore = ''
-  // }
   countryBefore = ticketmasterAPI.searchCountry;
   ticketmasterAPI.searchQuery = searchValue;
   ticketmasterAPI.page = 0;
@@ -52,13 +52,14 @@ async function onSerchQuerySubmit(e) {
 
   renderBaseMarkup();
 }
-// рендер ивентов
+
 async function renderBaseMarkup() {
   try {
     // нужен await, иначе вернется пуской промис, так как, он не будет
     // ждать выполнения запроса на бек
     const response = await ticketmasterAPI.fetchTickets();
-    // console.log(response);
+    // в ответе просто нет _embedded
+    console.log(response);
     const baseMarkup = response._embedded.events
     totalPages = response.page.totalPages
 
@@ -66,7 +67,6 @@ async function renderBaseMarkup() {
       const noInfo = "иди нахуй"
       const isVenues = baseMarkup?._embedded?.venues
       const venues = isVenues?.length && isVenues[0]
-      // console.log(baseMarkup);
 
       const isPriceRanges = baseMarkup?.priceRanges
       const priceRanges = isPriceRanges?.length && isPriceRanges[0]
@@ -84,19 +84,16 @@ async function renderBaseMarkup() {
       const currency = priceRanges?.currency || noInfo;
       const type = priceRanges?.type || noInfo;
       const previewImgUrl = baseMarkup?.images[5]?.url || noInfo;
+      const buyTicketUrl = baseMarkup?.url || noInfo;
 
-
-      // console.log(info);
       const cardData = {
         info, localDate, localTime, timezone, nameOfCity, nameOfCountry,
         name, minPrice, maxPrice, maxPrice, currency, type, previewImgUrl,
-        localDate, localDate, nameOfThePlace
+        localDate, localDate, nameOfThePlace, buyTicketUrl
       }
       const encodedCardData = encodeURIComponent(JSON.stringify(cardData));
 
 
-      // console.log(JSON.parse(decode));
-      // console.log(encodedCardData);
       return `
           <li class="events__item list" data-list=${encodedCardData}>
               <img class="events__img" src="${previewImgUrl}" alt="" width="120" height="120">
@@ -109,11 +106,11 @@ async function renderBaseMarkup() {
     renderPaginal(ticketmasterAPI.page)
 
   } catch (error) {
-    // Report.failure(
-    //   'Error',
-    //   'Sorry, no matches were found. Try a new search or use our suggestions.',
-    //   'Okay'
-    // );
+    Report.failure(
+      'Error',
+      'Sorry, no matches were found. Try a new search or use our suggestions.',
+      'Okay'
+    );
     console.error(error);
   }
 }
@@ -133,9 +130,9 @@ function openModal({ target }) {
     data = target.parentNode.dataset.list;
   }
   const parce = JSON.parse(decodeURIComponent(data))
-  // console.log(parce);
   backdrop.classList.remove('is-hidden')
-  const { name, previewImgUrl, info, localDate, localTime, timezone, nameOfCity, nameOfCountry, minPrice, maxPrice, currency } = parce;
+  const { name, previewImgUrl, info, localDate, localTime, timezone, nameOfCity,
+    nameOfCountry, minPrice, maxPrice, currency, buyTicketUrl } = parce;
 
   const modalHtml = `
   <div class="modal__closeWrapp">
@@ -172,24 +169,39 @@ function openModal({ target }) {
     <div class="modal__price modal__div" price>
      <h2 class="modal__priceTitle">PRICES</h2>
      <div class="modal__standartPrice modal__div">
-      <svg class="barcode" width="24" height="16">
-        <use href="../images/event_booster.svg#icon-barcode"></use>
-      </svg>
-      <p class="priceText">Standart ${minPrice} ${currency}</p>
-       <button class="modal__standartBtn modal__button">BUY TICKETS</button>
+       <div class="modal__priceWrapp">
+         ${iconBarcodeSVG}
+         <p class="priceText">Standart ${minPrice} ${currency}</p>
+       </div>
+       <button class="modal__standartBtn modal__button">
+        <a class="modal__buyLink link" href="${buyTicketUrl}">BUY TICKETS</a>
+       </button>
      </div>
      <div class="modal__vipPrice modal__div">
-      <svg class="barcode" width="24" height="16">
-        <use href="../images/event_booster.svg#icon-barcode"></use>
-      </svg>
-      <p class="priceText">VIP ${maxPrice} ${currency}</p>
-      <button class="modal__button">BUY TICKETS</button>
+       <div class="modal__priceWrapp">
+         ${iconBarcodeSVG}
+         <p class="priceText">VIP ${maxPrice} ${currency}</p>
+       </div>
+      <button class="modal__button">
+        <a class="modal__buyLink link" href="${buyTicketUrl}">BUY TICKETS</a>
+      </button>
      </div>
     </div>
     <button class="modal__buttonMore modal__button">MORE FROM THIS AUTHOR</button>
   </div>`
 
   modalEl.innerHTML = modalHtml
+
+  const btnMore = document.querySelector('.modal__buttonMore')
+
+  btnMore.addEventListener('click', (e) => {
+    e.preventDefault()
+
+    ticketmasterAPI.searchQuery = name;
+    renderBaseMarkup();
+    closeModal(e)
+    console.log(ticketmasterAPI.searchQuery);
+  })
 
   const closeBtn = document.querySelector('.modal__closeWrapp')
 
@@ -204,8 +216,8 @@ function openModal({ target }) {
     // 🟠почему e.currentTarget - это див?
     if (e.target === backdrop ||
       e.currentTarget === closeBtn ||
+      e.currentTarget === btnMore ||
       e.code === "Escape") {
-      // console.log(123);
       backdrop.classList.add('is-hidden')
       document.removeEventListener('keydown', closeModal)
       document.removeEventListener('click', closeModal)
@@ -219,7 +231,6 @@ function openModal({ target }) {
 
 
 function preventScroll(event) {
-  // Предотвращаем прокрутку на основной странице
   event.stopPropagation();
 }
 //
@@ -230,7 +241,8 @@ function renderPaginal(ticketPage) {
 
 
   if (totalPages === 1) {
-    list.innerHTML = '';
+    console.log('работает улсовие №1')
+    pagesEl.innerHTML = '';
     return;
   }
 
@@ -240,6 +252,7 @@ function renderPaginal(ticketPage) {
   if (totalPages <= 5 && totalPages > 0) {
     pagesEl.innerHTML = btnsArr.join('');
   } else if (totalPages > 0) {
+    console.log('работает улсовие №2')
     if (currentPage >= totalPages - 3) {
       pagesEl.innerHTML =
         btnsArr[0] +
@@ -248,12 +261,14 @@ function renderPaginal(ticketPage) {
         btnsArr[currentPage - 2] +
         btnsArr.slice(currentPage, currentPage + 3).join('');
     } else if (currentPage > 0 && currentPage < 2) {
+      console.log('работает улсовие №3')
       pagesEl.innerHTML =
         btnsArr[currentPage - 1] +
         btnsArr.slice(currentPage, currentPage + 2).join('') +
         '...' +
         btnsArr[totalPages - 1];
     } else if (currentPage === 2) {
+      console.log('работает улсовие №4')
       pagesEl.innerHTML =
         btnsArr[0] +
         btnsArr[currentPage - 1] +
@@ -261,6 +276,7 @@ function renderPaginal(ticketPage) {
         '...' +
         btnsArr[totalPages - 1];
     } else if (currentPage > 2) {
+      console.log('работает улсовие №5')
       const list = currentPage !== 3 ? btnsArr[0] +
         '...' +
         btnsArr[currentPage - 2] +
@@ -275,6 +291,7 @@ function renderPaginal(ticketPage) {
       btnsArr[totalPages - 1];
       pagesEl.innerHTML = list
     } else {
+      console.log('работает улсовие №6')
 
       pagesEl.innerHTML =
         btnsArr.slice(currentPage, currentPage + 3).join('') +
@@ -282,6 +299,7 @@ function renderPaginal(ticketPage) {
         btnsArr[totalPages - 1];
     }
   } else {
+    console.log('работает улсовие №7')
     pagesEl.innerHTML =
       btnsArr.slice(currentPage, currentPage + 3).join('') +
       '...' +
@@ -316,9 +334,10 @@ function renderCountries(arr) {
 }
 
 // 🔴 сделать красивый error
+// 🔴 Пагинация не работает при повторном фетч запросе. Значение events
+//     из бека просто не приходит ¯\_(ツ)_/¯
 // 🔴 разсортировать блоки кода по отдельным файлам
 // 🔴 Модалка;
-  // 🔴поставить свг штрихкоды на прайсы - поставил, но их не видно
   // 🔴модалку опускать ниже нужно только, когда ивент имеет очень много
   //    текста в инфо, только тогда можалка уходит наверх. Если же ивент
   //    имеет мало текста в инфо, то модалка спускается неестественно низко. Плюс к этому,
@@ -326,10 +345,13 @@ function renderCountries(arr) {
   //    сайта, получается несиметрично и некрасиво. Пробовал давать паддинги/марджаны и
   //    бекдропу и модалке — ничего не меняется.
   //    Как всё это пофиксить?
+  // 🟢привязать ссылки на покупку билетов к кнопкам
+  // 🟢поставить свг штрихкоды на прайсы - поставил, но их не видно
   // 🟢если нажать чуть правее картинки, то она не будет подгружаться в модалку
   // 🟢скролл внутри модалки не работает - дать оверфлоу скролл бекдропу и опустить модалку
   // 🟢крестика не видно и слушатель на него не вешается
   // 🟢некоторые свойства ундефайнд - заменить на дефолтное значение
+  // 🟢фетч аналогичных авторов по кнопке
   // 🟢запихать текст в дивы и расставить отступы от дивов, а не от пешек
   // 🟢при клике на картинку после переагрузки страницы, бывает, что
   //    в консоль два раза выводится значение. Мб нужно тогглить евнтлистнер
@@ -337,10 +359,10 @@ function renderCountries(arr) {
   // 🟢шрифты для адаптива
   // 🟢модалка открывается по нажатию на картинку, а не на див
   // 🟢адаптив модалки - при таблетке и при десктопе должно быть разное положение дивов
-// 🟢 Сделать так, что бы при новом поиске, все стиралось и рендерилось заново;
-// 🟢 Использовать слайс или цсс для максимальной ширины строки;
+  // 🟢 Сделать так, что бы при новом поиске, все стиралось и рендерилось заново;
+  // 🟢 Использовать слайс или цсс для максимальной ширины строки;
   // сделал, но помещается текст только одной строки
-// 🟢 Добавить поиск по странам
+  // 🟢 Добавить поиск по странам
   // 🟢сделать див с названиями стран и их id в дата атрибутах
   // 🟢добавить класс хидден и тогглить его по нажатию на див или на страну
   // 🟢сохранить id выбранной страны в value и передавать его в ticketmasterAPI

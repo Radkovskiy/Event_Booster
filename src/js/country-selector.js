@@ -16,7 +16,6 @@ function onShowCountriesList(e) {
 function onCloseCountriesList() {
   countriesList.classList.add('is-hidden');
   document.removeEventListener('click', onCloseCountriesList);
-  // console.log(123);
 }
 
 
@@ -25,9 +24,9 @@ export function chooseCountry() {
 
   optionsList.forEach(element => {
     element.addEventListener('click', event => {
-      // 🟠 из-за иннера удаляется свгшка
       selected.innerHTML = element.querySelector('label').innerHTML;
       ticketmasterAPI.searchCountry = event.target.id;
+      console.log(ticketmasterAPI.searchCountry);
       countriesList.classList.add('is-hidden');
     });
   });
